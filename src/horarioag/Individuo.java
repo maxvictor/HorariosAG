@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Individuo {
-
+    
     ArrayList<String> grade, nomeMaterias;
     int semanas, horarios, qtdMaterias, aptidao;
     Random gerador;
