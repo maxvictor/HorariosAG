@@ -27,8 +27,14 @@ public class HorarioAG {
             indTemp.definirGrade(3, 5);
             indTemp.adicionarMateria(materias);
             indTemp.gerarGradeAleatoria();
+            // indTemp.avaliarGrade();  falta finalizar método
             popi.add(indTemp);
-        }        
+        }
+        
+        
+        
+        popi.get(0).imprimirGrade();
+        System.out.println(popi.get(0).verificaMateriasGrade());
 
         /*
         Representar o Indivíduo
