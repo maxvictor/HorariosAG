@@ -6,19 +6,19 @@ import java.util.Scanner;
 
 public class Individuo {
 
-    ArrayList<String> grade, nomeMaterias;
-    int[] qtdPorMateria;
-    int semanas, horarios, qtdMaterias, aptidao;
-    Random gerador;
-    Scanner sc;
+    private ArrayList<String> grade, nomeMaterias;
+    private ArrayList<Integer> qtdPorMateria;
+    private int semanas, horarios, qtdMaterias, aptidao;
+    private Random gerador;
+    private Scanner sc;
 
     public Individuo() {
         grade = new ArrayList<>();
         nomeMaterias = new ArrayList<>();
         gerador = new Random();
-        aptidao = 100;
+        aptidao = 200;
         sc = new Scanner(System.in);
-        qtdPorMateria = new int[qtdMaterias];
+        qtdPorMateria = new ArrayList<>();
     }
 
     public ArrayList<String> getGrade() {
@@ -43,6 +43,54 @@ public class Individuo {
 
     public void setHorarios(int horarios) {
         this.horarios = horarios;
+    }
+
+    public ArrayList<String> getNomeMaterias() {
+        return nomeMaterias;
+    }
+
+    public void setNomeMaterias(ArrayList<String> nomeMaterias) {
+        this.nomeMaterias = nomeMaterias;
+    }
+
+    public ArrayList<Integer> getQtdPorMateria() {
+        return qtdPorMateria;
+    }
+
+    public void setQtdPorMateria(ArrayList<Integer> qtdPorMateria) {
+        this.qtdPorMateria = qtdPorMateria;
+    }
+
+    public int getQtdMaterias() {
+        return qtdMaterias;
+    }
+
+    public void setQtdMaterias(int qtdMaterias) {
+        this.qtdMaterias = qtdMaterias;
+    }
+
+    public int getAptidao() {
+        return aptidao;
+    }
+
+    public void setAptidao(int aptidao) {
+        this.aptidao = aptidao;
+    }
+
+    public Random getGerador() {
+        return gerador;
+    }
+
+    public void setGerador(Random gerador) {
+        this.gerador = gerador;
+    }
+
+    public Scanner getSc() {
+        return sc;
+    }
+
+    public void setSc(Scanner sc) {
+        this.sc = sc;
     }
 
     void imprimirGrade() {
@@ -94,6 +142,12 @@ public class Individuo {
     void definirGrade(int semanas, int horarios) {
         this.semanas = semanas;
         this.horarios = horarios;
+    }
+
+    void definirQuantidadeAulas(Integer qtd[]) {
+        for (int i = 0; i < qtd.length; i++) {
+            qtdPorMateria.add(qtd[i]);
+        }
     }
 
     void adicionarMateria(String mat[]) {
@@ -160,38 +214,11 @@ public class Individuo {
         return 1;
     }
 
-    int verificaHorariosSeguidos() {
-        // Verifica se existem x ou mais horários seguidos na grade
-        // Retorna 0 caso existam x ou mais horários seguidos
-        // Retorna 1 caso não existam
-        int x = 4;
-        int contSeguidos[] = new int[semanas];
-
-        for (int i = 0; i < contSeguidos.length; i++) {
-            contSeguidos[i] = 0;
-        }
-
-        for (int k = 0; k < semanas; k++) {
-            for (int i = k; i < (grade.size() - semanas); i = i + semanas) {
-                if (grade.get(i).equals(grade.get(i + semanas))) {
-                    contSeguidos[k]++;
-                }
-            }
-        }
-
-        for (int i = 0; i < contSeguidos.length; i++) {
-            if (contSeguidos[i] >= x) {
-                return 0;
-            }
-        }
-        return 1;
-    }
-
-    int aptidao01() {
+    int aptidao01(int penalidade) {
         // 01 - Caso existem x horários seguidos no mesmo dia -> -5 pts
         // Retorna 0 caso existam x ou mais horários seguidos
         // Retorna 1 caso não existam
-        int x = 3;
+        int x = penalidade;
         int contSeguidos[] = new int[semanas];
 
         for (int i = 0; i < contSeguidos.length; i++) {
@@ -215,25 +242,9 @@ public class Individuo {
     }
 
     int aptidao02() {
-        // 02 - Caso exista um horário afastado dos demais no mesmo dia -> -10 pts
-        // Retorna 0 caso exista um horário no mesmo dia afastado de outro igual
+        // 02 - Deve existir a quantidade de matérias estipuladas
+        // Retorna 0 caso não esteja ok
         // Retorna 1 caso esteja ok
-        for (int i = 0; i < horarios; i++) {
-            for (int j = 0; j < nomeMaterias.size(); j++) {
-                for (int k = j + 1; k < nomeMaterias.size(); k++) {
-
-                }
-            }
-        }
-
-        return 1;
-    }
-
-    int aptidao03() {
-        // 03 - Deve existir no mínimo y horários de cada matéria -> -20 pts
-        // Retorna 0 caso não exista y horários de cada matéria na grade
-        // Retorna 1 caso esteja ok
-        int y = 3;
 
         int contMat[] = new int[qtdMaterias];
         for (int i = 0; i < contMat.length; i++) {
@@ -248,30 +259,61 @@ public class Individuo {
             }
         }
 
+        int cont = 0;
         for (int i = 0; i < contMat.length; i++) {
-            if (contMat[i] < y) {
-                return 0;
+            if (contMat[i] != qtdPorMateria.get(i)) {
+                cont++;
             }
         }
-        return 1;
+        
+        if(cont == 0){
+            return 1;
+        }
+        
+        return 0;
+    }
+    
+    void aptidao03(){
+        // 03 - verifica a quantidade de materias na grade e compara com o desejado.
+        // Retira 10 pontos para cada quantidade que não se adeque.
+        
+        int contMat[] = new int[qtdMaterias];
+        for (int i = 0; i < contMat.length; i++) {
+            contMat[i] = 0;
+        }
+
+        for (int i = 0; i < grade.size(); i++) {
+            for (int j = 0; j < qtdMaterias; j++) {
+                if (nomeMaterias.get(j).equals(grade.get(i))) {
+                    contMat[j]++;
+                }
+            }
+        }
+
+        int cont = 0;
+        for (int i = 0; i < contMat.length; i++) {
+            if (contMat[i] != qtdPorMateria.get(i)) {
+                cont++;
+            }
+        }
+        
+        if(cont != 0){
+            aptidao -= cont*10;
+        }
     }
 
-    int avaliarGrade() {
-        // Todo indivíduo inicia com aptidão igual a 100 pts
+    void avaliarGrade() {
+        // Todo indivíduo inicia com aptidão igual a 200 pts
         // Perde-se pontos para cada restrição
-        /*
-            .: Pesos aplicados a cada critério :.
-            01 - Caso existem x horários seguidos no mesmo dia -> -5 pts
-            02 - Caso exista um horário afastado dos demais no memso dia -> -10 pts
-            03 - Deve existir no mínimo y horários de cada matéria -> -20 pts
-         */
-        if (aptidao01() == 0) {
+        if (aptidao01(3) == 0) {
             aptidao -= 5;
         }
-        if (aptidao03() == 0) {
-            aptidao -= 20;
+        if (aptidao01(4) == 0) {
+            aptidao -= 15;
         }
-
-        return aptidao;
+        if (aptidao02() == 0) {
+            aptidao -= 30;
+        }
+        aptidao03();
     }
 }
