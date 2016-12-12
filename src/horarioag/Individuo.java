@@ -8,7 +8,7 @@ public class Individuo implements Comparable<Individuo> {
 
     private ArrayList<String> grade, nomeMaterias;
     private ArrayList<Integer> qtdPorMateria;
-    private int semanas, horarios, qtdMaterias, aptidao;
+    private int linha, coluna, qtdMaterias, aptidao;
     private Random gerador;
     private Scanner sc;
 
@@ -30,19 +30,19 @@ public class Individuo implements Comparable<Individuo> {
     }
 
     public int getSemanas() {
-        return semanas;
+        return linha;
     }
 
     public void setSemanas(int semanas) {
-        this.semanas = semanas;
+        this.linha = semanas;
     }
 
     public int getHorarios() {
-        return horarios;
+        return coluna;
     }
 
     public void setHorarios(int horarios) {
-        this.horarios = horarios;
+        this.coluna = horarios;
     }
 
     public ArrayList<String> getNomeMaterias() {
@@ -94,7 +94,7 @@ public class Individuo implements Comparable<Individuo> {
     }
 
     void imprimirGrade() {
-        switch (semanas) {
+        switch (linha) {
             case 1:
                 System.out.print("|    | Seg |");
                 break;
@@ -122,8 +122,8 @@ public class Individuo implements Comparable<Individuo> {
         }
 
         int j = 0;
-        int s = semanas;
-        for (int i = 0; i < horarios;) {
+        int s = linha;
+        for (int i = 0; i < coluna;) {
             System.out.print("\n");
             System.out.print("| " + (i + 1) + "º | ");
             for (; j < grade.size(); j++) {
@@ -133,15 +133,15 @@ public class Individuo implements Comparable<Individuo> {
                 System.out.print(grade.get(j) + " | ");
             }
             i++;
-            s += semanas;
+            s += linha;
         }
 
         System.out.println("");
     }
 
     void definirGrade(int semanas, int horarios) {
-        this.semanas = semanas;
-        this.horarios = horarios;
+        this.linha = semanas;
+        this.coluna = horarios;
     }
 
     void definirQuantidadeAulas(Integer qtd[]) {
@@ -177,14 +177,14 @@ public class Individuo implements Comparable<Individuo> {
     }
 
     void gerarGradeVazia() {
-        for (int i = 0; i < semanas * horarios; i++) {
+        for (int i = 0; i < linha * coluna; i++) {
             grade.add("---");
         }
     }
 
     void gerarGradeAleatoria() {
         //grade.clear();
-        for (int i = 0; i < horarios * semanas; i++) {
+        for (int i = 0; i < coluna * linha; i++) {
             int numRand = gerador.nextInt(nomeMaterias.size());
             grade.add(nomeMaterias.get(numRand));
         }
@@ -219,15 +219,15 @@ public class Individuo implements Comparable<Individuo> {
         // Retorna 0 caso existam x ou mais horários seguidos
         // Retorna 1 caso não existam
         int x = penalidade;
-        int contSeguidos[] = new int[semanas];
+        int contSeguidos[] = new int[linha];
 
         for (int i = 0; i < contSeguidos.length; i++) {
             contSeguidos[i] = 0;
         }
 
-        for (int k = 0; k < semanas; k++) {
-            for (int i = k; i < (grade.size() - semanas); i = i + semanas) {
-                if (grade.get(i).equals(grade.get(i + semanas))) {
+        for (int k = 0; k < linha; k++) {
+            for (int i = k; i < (grade.size() - linha); i = i + linha) {
+                if (grade.get(i).equals(grade.get(i + linha))) {
                     contSeguidos[k]++;
                 }
             }
@@ -265,18 +265,18 @@ public class Individuo implements Comparable<Individuo> {
                 cont++;
             }
         }
-        
-        if(cont == 0){
+
+        if (cont == 0) {
             return 1;
         }
-        
+
         return 0;
     }
-    
-    void aptidao03(){
+
+    void aptidao03() {
         // 03 - verifica a quantidade de materias na grade e compara com o desejado.
         // Retira 10 pontos para cada quantidade que não se adeque.
-        
+
         int contMat[] = new int[qtdMaterias];
         for (int i = 0; i < contMat.length; i++) {
             contMat[i] = 0;
@@ -296,31 +296,66 @@ public class Individuo implements Comparable<Individuo> {
                 cont++;
             }
         }
-        
-        if(cont != 0){
-            aptidao -= cont*10;
+
+        if (cont != 0) {
+            aptidao -= (cont * 10);
         }
+    }
+
+    int[][] aptidao04(int penalidade) {
+        // 04 - Caso existem x horários no mesmo dia
+        // Retorna 0 caso existam x horarios no dia
+        // Retorna 1 caso não existam
+        int x = penalidade;
+        int contHorarios[][] = new int[qtdMaterias][coluna];
+
+        for (int i = 0; i < qtdMaterias; i++) {
+            for (int j = 0; j < coluna; j++) {
+                contHorarios[i][j] = 0;
+            }
+        }
+
+        for (int i = 0; i < qtdMaterias; i++) {
+            for (int k = 0; k < coluna; k++) {
+                for (int j = k; j < grade.size(); j = j + coluna) {
+                    if (nomeMaterias.get(i).equals(grade.get(j))) {
+                        contHorarios[i][k] += 1;
+                    }
+                }
+            }
+        }
+
+        for (int i = 0; i < qtdMaterias; i++) {
+            for (int j = 0; j < coluna; j++) {
+                if (contHorarios[i][j] == x) {
+                    aptidao -= 10;
+                }
+            }
+        }
+        return contHorarios;
     }
 
     void avaliarGrade() {
         // Todo indivíduo inicia com aptidão igual a 200 pts
         // Perde-se pontos para cada restrição
-        if (aptidao01(3) == 0) {
+        if (aptidao01(4) == 0) {
             aptidao -= 5;
         }
-        if (aptidao01(4) == 0) {
+        if (aptidao01(5) == 0) {
             aptidao -= 15;
         }
         if (aptidao02() == 0) {
-            aptidao -= 30;
+            aptidao -= 40;
         }
+
         aptidao03();
+        aptidao04(1);
     }
-    
-    void mutacao(){
+
+    void mutacao() {
         int numRand = gerador.nextInt(grade.size());
         int numRandMateria = gerador.nextInt(nomeMaterias.size());
-        
+
         grade.set(numRand, nomeMaterias.get(numRandMateria));
     }
 

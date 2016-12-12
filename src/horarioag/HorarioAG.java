@@ -19,34 +19,57 @@ public class HorarioAG {
         Integer qtdPorMateria[];
         int qtdMaterias;
         Integer selTorneio[] = new Integer[qtdPopi];
-        int linha, coluna, soma = 0, criterioDeParada = 50;
-        double taxaCrossOver = 0.2, taxaMutacao = 5;
+        int linha, coluna, soma = 0, criterioDeParada = 2000;
+        double taxaCrossOver = 0.8, taxaMutacao = 5;
         int qtdTotalDeAulas;
-        
+
         Random gerador = new Random();
         Scanner sc = new Scanner(System.in);
-        
+
+        /*
         System.out.println("Digite a quantidade de dias: ");
         coluna = sc.nextInt();
         sc.skip("\n");
         System.out.println("Digite a quantidade de horários: ");
         linha = sc.nextInt();
         sc.skip("\n");
-        qtdTotalDeAulas = linha*coluna;
+        qtdTotalDeAulas = linha * coluna;
         System.out.println("Digite a quantidade de matérias: ");
         qtdMaterias = sc.nextInt();
         sc.skip("\n");
         materias = new String[qtdMaterias];
         qtdPorMateria = new Integer[qtdMaterias];
-        for(int i=0; i<qtdMaterias; i++){
-            System.out.println("Digite a matéria número " + i + ": ");
+        for (int i = 0; i < qtdMaterias; i++) {
+            System.out.println("Digite o nome da matéria número " + (i + 1) + ": ");
             materias[i] = sc.nextLine();
-            qtdTotalDeAulas = (linha*coluna)-materias.length;
-            System.out.println("Quantidade restante de aulas: " + qtdTotalDeAulas);
-            System.out.println("Digite a quantidade de aulas para a máteria " + materias[i] + ": ");
-            qtdPorMateria[i] = sc.nextInt();
         }
-        
+        for (int i = 0; i < qtdMaterias; i++) {
+            System.out.println("Você ainda pode ter " + qtdTotalDeAulas + " aulas");
+            System.out.println("Digite a quantidade de aulas para a mátéria " + materias[i] + ": ");
+            qtdPorMateria[i] = sc.nextInt();
+            sc.skip("\n");
+            qtdTotalDeAulas -= qtdPorMateria[i];
+        }
+         */
+        coluna = 5;
+        linha = 5;
+        qtdTotalDeAulas = linha * coluna;
+        qtdMaterias = 6;
+        materias = new String[qtdMaterias];
+        qtdPorMateria = new Integer[qtdMaterias];
+        materias[0] = "Por";
+        materias[1] = "Mat";
+        materias[2] = "Geo";
+        materias[3] = "His";
+        materias[4] = "Fis";
+        materias[5] = "Ing";
+        qtdPorMateria[0] = 3;
+        qtdPorMateria[1] = 5;
+        qtdPorMateria[2] = 5;
+        qtdPorMateria[3] = 5;
+        qtdPorMateria[4] = 5;
+        qtdPorMateria[5] = 2;
+
         int pontoDeCorte = (int) floor((linha * coluna) / 2);
 
         for (int i = 0; i < qtdPorMateria.length; i++) {
@@ -79,6 +102,7 @@ public class HorarioAG {
         // Estabelecendo critério de parada
         int cont = 1;
         while (cont <= criterioDeParada) {
+
             System.out.println("Geração: " + cont);
 
             if (!popi2.isEmpty()) {
@@ -106,11 +130,28 @@ public class HorarioAG {
             // Ordenando os melhores individuos por aptidao de Popi
             popPorAptidao = popi;
             Collections.sort(popPorAptidao); // ordena o array de acordo com a aptidão
-            
-            if(cont == criterioDeParada){
+
+            // Imprime melhor indivíduo quando chegar no critério de parada
+            if (cont == criterioDeParada) {
                 popPorAptidao.get(0).imprimirGrade();
                 System.out.println(popPorAptidao.get(0).getAptidao());
+                int x[][] = popPorAptidao.get(0).aptidao04(1);
+
+                for (int i = 0; i < qtdMaterias; i++) {
+                    System.out.println("");
+                    for (int j = 0; j < coluna; j++) {
+                        System.out.print(x[i][j]);
+                    }
+                }
+                System.out.println("");
             }
+            // Imprime média de aptidão por geração
+            float mediaAptidaoGeracao = 0;
+            for (int i = 0; i < qtdPopi; i++) {
+                mediaAptidaoGeracao += popPorAptidao.get(i).getAptidao();
+            }
+            mediaAptidaoGeracao = mediaAptidaoGeracao / qtdPopi;
+            System.out.println("Média da Geração: " + mediaAptidaoGeracao);
 
             // Passar os melhores indivíduos para a nova geração
             popi2 = new ArrayList<>();
