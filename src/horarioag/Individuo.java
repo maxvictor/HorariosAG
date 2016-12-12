@@ -215,7 +215,7 @@ public class Individuo implements Comparable<Individuo> {
     }
 
     int aptidao01(int penalidade) {
-        // 01 - Caso existem x horários seguidos no mesmo dia -> -5 pts
+        // 01 - Caso existem x horários seguidos no mesmo dia
         // Retorna 0 caso existam x ou mais horários seguidos
         // Retorna 1 caso não existam
         int x = penalidade;
@@ -242,7 +242,7 @@ public class Individuo implements Comparable<Individuo> {
     }
 
     int aptidao02() {
-        // 02 - Deve existir a quantidade de matérias estipuladas
+        // 02 - Deve existir a quantidade de aulas estipuladas para cada matéria
         // Retorna 0 caso não esteja ok
         // Retorna 1 caso esteja ok
 

@@ -20,7 +20,7 @@ public class HorarioAG {
         int qtdMaterias;
         Integer selTorneio[] = new Integer[qtdPopi];
         int linha, coluna, soma = 0, criterioDeParada = 2000;
-        double taxaCrossOver = 0.05, taxaMutacao = 1;
+        double taxaElitismo = 0.2, taxaMutacao = 10;
         int qtdTotalDeAulas;
         Grafico gc = new Grafico();
 
@@ -134,8 +134,10 @@ public class HorarioAG {
 
             // Imprime melhor indivíduo quando chegar no critério de parada
             if (cont == criterioDeParada) {
+                System.out.println("********************************");
                 System.out.println("Melhor grade: ");
                 popPorAptidao.get(0).imprimirGrade();
+                System.out.println("********************************");
                 gc.gerarGraficoMedia(medias);
                 gc.gerarGraficoMelhor(melhor);
             }
@@ -151,10 +153,11 @@ public class HorarioAG {
             // Imprime a aptidão do melhor indivíduo da geração
             System.out.println("Aptidão do melhor indivíduo: " + popPorAptidao.get(0).getAptidao());
             melhor.add(popPorAptidao.get(0).getAptidao());
+            System.out.println("-------------------------------");
 
             // Passar os melhores indivíduos para a nova geração
             popi2 = new ArrayList<>();
-            for (int i = 0; i < (qtdPopi * taxaCrossOver); i++) {
+            for (int i = 0; i < (qtdPopi * taxaElitismo); i++) {
                 popi2.add(popPorAptidao.get(i));
             }
 
@@ -191,10 +194,10 @@ public class HorarioAG {
                     filho2.set(j, grade2.get(j));
                     filho2.set(k, grade1.get(k));
                 }
-
+                
                 indTemp.setGrade(filho1);
                 indTemp2.setGrade(filho2);
-
+                
                 // Mutacao
                 int randMutacao = gerador.nextInt(100);
                 int randMutacao2 = gerador.nextInt(100);
