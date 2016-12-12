@@ -3,7 +3,6 @@ package horarioag;
 import static java.lang.Math.floor;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -14,14 +13,16 @@ public class HorarioAG {
         ArrayList<Individuo> popi = new ArrayList<>();
         ArrayList<Individuo> popi2 = new ArrayList<>();
         ArrayList<Individuo> popPorAptidao = new ArrayList<>();
-        Individuo ind = new Individuo();
+        ArrayList<Float> medias = new ArrayList<>();
+        ArrayList<Integer> melhor = new ArrayList<>();
         String materias[];
         Integer qtdPorMateria[];
         int qtdMaterias;
         Integer selTorneio[] = new Integer[qtdPopi];
         int linha, coluna, soma = 0, criterioDeParada = 2000;
-        double taxaCrossOver = 0.8, taxaMutacao = 5;
+        double taxaCrossOver = 0.05, taxaMutacao = 1;
         int qtdTotalDeAulas;
+        Grafico gc = new Grafico();
 
         Random gerador = new Random();
         Scanner sc = new Scanner(System.in);
@@ -133,17 +134,10 @@ public class HorarioAG {
 
             // Imprime melhor indivíduo quando chegar no critério de parada
             if (cont == criterioDeParada) {
+                System.out.println("Melhor grade: ");
                 popPorAptidao.get(0).imprimirGrade();
-                System.out.println(popPorAptidao.get(0).getAptidao());
-                int x[][] = popPorAptidao.get(0).aptidao04(1);
-
-                for (int i = 0; i < qtdMaterias; i++) {
-                    System.out.println("");
-                    for (int j = 0; j < coluna; j++) {
-                        System.out.print(x[i][j]);
-                    }
-                }
-                System.out.println("");
+                gc.gerarGraficoMedia(medias);
+                gc.gerarGraficoMelhor(melhor);
             }
             // Imprime média de aptidão por geração
             float mediaAptidaoGeracao = 0;
@@ -151,7 +145,12 @@ public class HorarioAG {
                 mediaAptidaoGeracao += popPorAptidao.get(i).getAptidao();
             }
             mediaAptidaoGeracao = mediaAptidaoGeracao / qtdPopi;
-            System.out.println("Média da Geração: " + mediaAptidaoGeracao);
+            System.out.println("Média de Aptidão da Geração: " + mediaAptidaoGeracao);
+            medias.add(mediaAptidaoGeracao);
+
+            // Imprime a aptidão do melhor indivíduo da geração
+            System.out.println("Aptidão do melhor indivíduo: " + popPorAptidao.get(0).getAptidao());
+            melhor.add(popPorAptidao.get(0).getAptidao());
 
             // Passar os melhores indivíduos para a nova geração
             popi2 = new ArrayList<>();

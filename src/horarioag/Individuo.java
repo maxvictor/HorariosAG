@@ -140,8 +140,8 @@ public class Individuo implements Comparable<Individuo> {
     }
 
     void definirGrade(int semanas, int horarios) {
-        this.linha = semanas;
-        this.coluna = horarios;
+        this.coluna = semanas;
+        this.linha = horarios;
     }
 
     void definirQuantidadeAulas(Integer qtd[]) {
@@ -302,7 +302,7 @@ public class Individuo implements Comparable<Individuo> {
         }
     }
 
-    int[][] aptidao04(int penalidade) {
+    void aptidao04(int penalidade) {
         // 04 - Caso existem x horários no mesmo dia
         // Retorna 0 caso existam x horarios no dia
         // Retorna 1 caso não existam
@@ -332,12 +332,17 @@ public class Individuo implements Comparable<Individuo> {
                 }
             }
         }
-        return contHorarios;
     }
 
     void avaliarGrade() {
         // Todo indivíduo inicia com aptidão igual a 200 pts
         // Perde-se pontos para cada restrição
+        if(aptidao01(3) == 0){
+            aptidao += 15;
+        }
+        if(aptidao01(2) == 0){
+            aptidao += 5;
+        }
         if (aptidao01(4) == 0) {
             aptidao -= 5;
         }
