@@ -5,22 +5,49 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.Scanner;
 
 public class HorarioAG {
 
     public static void main(String[] args) {
-        int qtdPopi = 100;
+        int qtdPopi = 1000;
         ArrayList<Individuo> popi = new ArrayList<>();
         ArrayList<Individuo> popi2 = new ArrayList<>();
         ArrayList<Individuo> popPorAptidao = new ArrayList<>();
         Individuo ind = new Individuo();
-        String materias[] = {"Por", "Mat", "Geo", "His", "Bio", "Fis"};
-        Integer qtdPorMateria[] = {5, 5, 3, 3, 5, 4};
+        String materias[];
+        Integer qtdPorMateria[];
+        int qtdMaterias;
         Integer selTorneio[] = new Integer[qtdPopi];
-        int linha = 5, coluna = 5, soma = 0;
+        int linha, coluna, soma = 0, criterioDeParada = 50;
         double taxaCrossOver = 0.2, taxaMutacao = 5;
-        int pontoDeCorte = (int) floor((linha * coluna) / 2);
+        int qtdTotalDeAulas;
+        
         Random gerador = new Random();
+        Scanner sc = new Scanner(System.in);
+        
+        System.out.println("Digite a quantidade de dias: ");
+        coluna = sc.nextInt();
+        sc.skip("\n");
+        System.out.println("Digite a quantidade de horários: ");
+        linha = sc.nextInt();
+        sc.skip("\n");
+        qtdTotalDeAulas = linha*coluna;
+        System.out.println("Digite a quantidade de matérias: ");
+        qtdMaterias = sc.nextInt();
+        sc.skip("\n");
+        materias = new String[qtdMaterias];
+        qtdPorMateria = new Integer[qtdMaterias];
+        for(int i=0; i<qtdMaterias; i++){
+            System.out.println("Digite a matéria número " + i + ": ");
+            materias[i] = sc.nextLine();
+            qtdTotalDeAulas = (linha*coluna)-materias.length;
+            System.out.println("Quantidade restante de aulas: " + qtdTotalDeAulas);
+            System.out.println("Digite a quantidade de aulas para a máteria " + materias[i] + ": ");
+            qtdPorMateria[i] = sc.nextInt();
+        }
+        
+        int pontoDeCorte = (int) floor((linha * coluna) / 2);
 
         for (int i = 0; i < qtdPorMateria.length; i++) {
             soma += qtdPorMateria[i];
@@ -50,8 +77,14 @@ public class HorarioAG {
         }
 
         // Estabelecendo critério de parada
-        int cont = 0;
-        while (cont < 100) {
+        int cont = 1;
+        while (cont <= criterioDeParada) {
+            System.out.println("Geração: " + cont);
+
+            if (!popi2.isEmpty()) {
+                popi = popi2;
+            }
+
             // Seleção Torneio
             int escolhido1, escolhido2;
             float aptidao1, aptidao2;
@@ -70,17 +103,23 @@ public class HorarioAG {
                 }
             }
 
-            // Passar os melhores indivíduos para a nova geração
+            // Ordenando os melhores individuos por aptidao de Popi
             popPorAptidao = popi;
             Collections.sort(popPorAptidao); // ordena o array de acordo com a aptidão
+            
+            if(cont == criterioDeParada){
+                popPorAptidao.get(0).imprimirGrade();
+                System.out.println(popPorAptidao.get(0).getAptidao());
+            }
 
-            // Preenche o array popi2 com os melhores individuos da população anterior
+            // Passar os melhores indivíduos para a nova geração
+            popi2 = new ArrayList<>();
             for (int i = 0; i < (qtdPopi * taxaCrossOver); i++) {
                 popi2.add(popPorAptidao.get(i));
             }
 
             // Realizar Crossover
-            while (popi2.size() != qtdPopi) {
+            while (popi2.size() < qtdPopi) {
 
                 int i = 0;
                 Individuo indTemp = new Individuo();
@@ -147,8 +186,7 @@ public class HorarioAG {
 
                 i += 2;
             }
-
-            cont++;
+            cont += 1;
         }
     }
 }
