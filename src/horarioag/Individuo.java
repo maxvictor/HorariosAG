@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
 
-public class Individuo {
+public class Individuo implements Comparable<Individuo> {
 
     private ArrayList<String> grade, nomeMaterias;
     private ArrayList<Integer> qtdPorMateria;
@@ -315,5 +315,23 @@ public class Individuo {
             aptidao -= 30;
         }
         aptidao03();
+    }
+    
+    void mutacao(){
+        int numRand = gerador.nextInt(grade.size());
+        int numRandMateria = gerador.nextInt(nomeMaterias.size());
+        
+        grade.set(numRand, nomeMaterias.get(numRandMateria));
+    }
+
+    @Override
+    public int compareTo(Individuo outroIndividuo) {
+        if (this.aptidao > outroIndividuo.aptidao) {
+            return -1;
+        }
+        if (this.aptidao < outroIndividuo.aptidao) {
+            return 1;
+        }
+        return 0;
     }
 }
